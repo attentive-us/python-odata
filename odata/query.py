@@ -343,3 +343,19 @@ class Query(object):
         url = self.entity.__odata_url__()
         response_data = self.connection.execute_get(url, params=query_params)
         return (response_data or {}).get('value')
+
+    def count(self):
+        """
+        Count number of Entity entries.
+
+        .. code-block:: python
+
+            >>> query = Service.query(MyEntity)
+            >>> query.count()
+            2155
+
+        :return: Count of Entity
+        """
+        url = self.entity.__odata_url__()
+        response_data = self.connection._do_get(f"{url}/$count")
+        return int(response_data.content)
