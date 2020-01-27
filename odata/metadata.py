@@ -67,6 +67,7 @@ class MetaData(object):
                 name = schema_nav['name']
                 type_ = schema_nav['type']
                 foreign_key = schema_nav['foreign_key']
+                referenced_property = schema_nav['referenced_property']
 
                 is_collection, type_ = self._type_is_collection(type_)
 
@@ -79,6 +80,7 @@ class MetaData(object):
                             _search_entity,
                             collection=is_collection,
                             foreign_key=foreign_key,
+                            referenced_property=referenced_property,
                         )
                         setattr(entity, name, nav)
 
@@ -379,16 +381,19 @@ class MetaData(object):
             p_name = nav_property.attrib['Name']
             p_type = nav_property.attrib['Type']
             p_foreign_key = None
+            p_referenced_property = None
 
             ref_constraint = xmlq(nav_property, 'edm:ReferentialConstraint')
             if ref_constraint:
                 ref_constraint = ref_constraint[0]
                 p_foreign_key = ref_constraint.attrib['Property']
+                p_referenced_property = ref_constraint.attrib['ReferencedProperty']
 
             entity['navigation_properties'].append({
                 'name': p_name,
                 'type': p_type,
                 'foreign_key': p_foreign_key,
+                'referenced_property': p_referenced_property,
             })
         return entity
 
