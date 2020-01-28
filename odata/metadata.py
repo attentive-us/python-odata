@@ -135,6 +135,7 @@ class MetaData(object):
                             'primary_key': prop['is_primary_key'],
                             'is_collection': prop['is_collection'],
                             'is_computed_value': prop['is_computed_value'],
+                            'max_length': prop['max_length'],
                         }
                         property_instance = type_(prop_name, **type_options)
                     setattr(entity_class, prop_name, property_instance)
@@ -359,6 +360,11 @@ class MetaData(object):
         for entity_property in xmlq(entity_element, 'edm:Property'):
             p_name = entity_property.attrib['Name']
             p_type = entity_property.attrib['Type']
+            p_max_length = entity_property.attrib.get('MaxLength')
+            try:
+                p_max_length = int(p_max_length)
+            except (ValueError, TypeError):
+                p_max_length = None
 
             is_collection, p_type = self._type_is_collection(p_type)
             is_computed_value = False
@@ -375,6 +381,7 @@ class MetaData(object):
                 'is_primary_key': p_name in entity_pks,
                 'is_collection': is_collection,
                 'is_computed_value': is_computed_value,
+                'max_length': p_max_length,
             })
 
         for nav_property in xmlq(entity_element, 'edm:NavigationProperty'):
