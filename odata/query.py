@@ -358,4 +358,8 @@ class Query(object):
         """
         url = self.entity.__odata_url__()
         response_data = self.connection._do_get(f"{url}/$count")
-        return int(response_data.content)
+        try:
+            return int(response_data.content)
+        except ValueError:
+            # Remove the BOM char
+            return int(response_data.content.decode("utf-8-sig"))
